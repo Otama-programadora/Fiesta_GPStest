@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Fiesta_GPStest</string>
+    <string name="settingCamera_text">カメラの設定</string>
+    <string name="home_text">ホーム</string>
+    <string name="buttonGPS_text">GPS開始/停止</string>
+    <string name="buttonCamera_text">カメラ開始/停止</string>
+    <string name="settingGPS_text">GPSの設定</string>
+</resources>
