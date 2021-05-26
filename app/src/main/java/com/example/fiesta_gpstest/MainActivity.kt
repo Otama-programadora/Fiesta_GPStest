@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity() {
             override fun onLocationResult(p0: LocationResult?) {
                 if (p0?.lastLocation != null){
                     lastLocation = p0.lastLocation //位置情報を取得
+                    //LocationをStringにキャストする方法を探そう
                     textView.text = "緯度:${lastLocation.latitude}, 経度:${lastLocation.longitude}"
                 }
             }
