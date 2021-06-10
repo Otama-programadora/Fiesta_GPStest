@@ -23,9 +23,9 @@ import kotlin.concurrent.thread
 
 @Suppress("DEPRECATION")
 class S3_test :AppCompatActivity() {
-    private val BUCKET:String = "test-android-programming-27-de-abril"
-    private val ACCESS_KEY:String = "AKIAVKG6H5EB7UFHIRGW"
-    private val SECRET_ACCESS_KEY:String = "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"
+    //private val BUCKET:String =
+    //private val ACCESS_KEY:String =
+    //private val SECRET_ACCESS_KEY:String =
     private val TEST_FILE: String = "test.txt" //S3に上げるファイルの名前
 
             /*private val mContext:Context?
