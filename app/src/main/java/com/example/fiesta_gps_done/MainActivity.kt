@@ -1,20 +1,24 @@
-package com.example.fiesta_gpstest
+package com.example.fiesta_gps_done
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.concurrent.thread
+import kotlin.concurrent.timerTask
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
     //許可がおりたかどうかの結果を受け取るための変数
     private val MY_PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 1
@@ -28,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     //位置情報が更新されたときに呼出され、更新内容を受け取るリスナー
     private var locationCallback: LocationCallback? = null
 
+    //タイマーの更新間隔（今はテストなのでとりあえず30秒おき）
+    //10秒だと短すぎて落ちる //ほんとに？
+    val timerInterval: Long = 60000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,15 +44,19 @@ class MainActivity : AppCompatActivity() {
 
         checkPermission()
 
-        btnGPS.setOnClickListener {
+        //ここを自動更新にできないか？
+        //タイマーイベントにする　（多分別のスレッドで行うことになる）
+        /*btnGPS.setOnClickListener {
             if (lastLocation != null) {
                 //位置情報をS3testに渡してデータをアップロードしてほしい
                 val intent = Intent(this, S3_test::class.java)
-                var GPSdata = lastLocation.toString()
-                intent.putExtra("locationData", GPSdata)
+                var GPSdata_lat = lastLocation.latitude //緯度
+                var GPSdata_lng = lastLocation.longitude //経度
+                intent.putExtra("latData", GPSdata_lat)
+                intent.putExtra("lngData", GPSdata_lng)
                 startActivity(intent)
             }
-        }
+        }*/
     }
 
     //メニューを表示する関数
@@ -129,17 +141,52 @@ class MainActivity : AppCompatActivity() {
             override fun onLocationResult(p0: LocationResult?) {
                 if (p0?.lastLocation != null){
                     lastLocation = p0.lastLocation //位置情報を取得
-                    //LocationをStringにキャストする方法を探そう
                     textView.text = "緯度:${lastLocation.latitude}, 経度:${lastLocation.longitude}"
                 }
             }
         }
         //引数にコールバック関数を与えてリアルタイムに位置情報を取得できるようにする
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
+
+        giveGPS_S3() //位置情報をs3クラスに渡す
     }
 
     private fun showToast(msg: String){
         val toast = Toast.makeText(this, msg, Toast.LENGTH_LONG)
         toast.show()
+    }
+
+    //タイマーを使ってX秒間隔で位置情報をs3クラスに渡す関数
+    private fun giveGPS_S3() {
+        /*var timer = Timer()
+
+        var timerTask: TimerTask.() -> Unit = {
+            //位置情報をS3testに渡してデータをアップロードしてほしい
+            var GPSdata_lat = lastLocation.latitude //緯度
+            var GPSdata_lng = lastLocation.longitude //経度
+            intent.putExtra("latData", GPSdata_lat)
+            intent.putExtra("lngData", GPSdata_lng)
+            startActivity(intent)
+            //this.cancel()
+        }
+        timer.scheduleAtFixedRate(timerTask, 0, timerInterval) //delay(ms)後にTimerTaskをperiod(ms)間隔で実行*/
+
+        val intent = Intent(this, S3_test::class.java)
+
+        thread{
+            //delay(ms)後にTimerTaskをperiod(ms)間隔で実行
+            Timer().scheduleAtFixedRate(timerTask {
+                Log.e("NIlu_TAG","Hello World")
+                if (::lastLocation.isInitialized) {
+                    //位置情報が初期化済みならそのデータをs3クラスに渡す
+                    var GPSdata_lat = lastLocation.latitude //緯度
+                    var GPSdata_lng = lastLocation.longitude //経度
+                    intent.putExtra("latData", GPSdata_lat)
+                    intent.putExtra("lngData", GPSdata_lng)
+                    startActivity(intent)
+                }
+            }, 0, timerInterval)
+        }
+
     }
 }

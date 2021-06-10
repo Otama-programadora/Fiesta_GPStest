@@ -1,4 +1,4 @@
-package com.example.fiesta_gpstest
+package com.example.fiesta_gps_done
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

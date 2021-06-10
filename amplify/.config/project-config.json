@@ -2,7 +2,7 @@
   "providers": [
     "awscloudformation"
   ],
-  "projectName": "AmplifyTest1",
+  "projectName": "Fiesta_GPS_done",
   "version": "3.1",
   "frontend": "android",
   "android": {

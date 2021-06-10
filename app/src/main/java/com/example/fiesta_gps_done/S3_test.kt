@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.example.fiesta_gpstest
+package com.example.fiesta_gps_done
 
 
 import android.os.Build
@@ -23,7 +23,10 @@ import kotlin.concurrent.thread
 
 @Suppress("DEPRECATION")
 class S3_test :AppCompatActivity() {
-    private val TEST_FILE: String = "test.txt"     //S3に上げるファイルの名前
+    private val BUCKET:String = "test-android-programming-27-de-abril"
+    private val ACCESS_KEY:String = "AKIAVKG6H5EB7UFHIRGW"
+    private val SECRET_ACCESS_KEY:String = "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"
+    private val TEST_FILE: String = "test.txt" //S3に上げるファイルの名前
 
             /*private val mContext:Context?
             init {
@@ -37,15 +40,21 @@ class S3_test :AppCompatActivity() {
         setContentView(R.layout.activity_s3_test)
 
         //MainActivityから受け取ったデータ（緯度経度）を画面に表示する
-        val GPSdata = intent.getStringExtra("locationData")
-        GPSview.text = GPSdata
+        val GPSdata_lat = intent.getDoubleExtra("latData", 0.0) //デフォルト値って何？
+        val GPSdata_lng = intent.getDoubleExtra("lngData",0.0)
 
-        doInBackground(GPSdata)
+        //GPSview.text = "緯度は${GPSdata_lat} で、 経度は${GPSdata_lng}"
+
+        //MainActivityから受け取ったデータは浮動小数点型なので文字列型にキャストして次の関数に渡す
+        val GPSdata_lat_str:String = GPSdata_lat.toString()
+        val GPSdata_lng_str:String = GPSdata_lng.toString()
+
+        doInBackground(GPSdata_lat_str, GPSdata_lng_str)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    // paramsにGPSdataを入れてるよ！
-    fun doInBackground(vararg params: String?): Int {
+    //ファイルに位置情報を書いてs3に上げる関数
+    fun doInBackground(lat: String, lng: String): Int {
         //Amazon Cognito 認証情報プロバイダーを初期化
         /*val credentialsProvider = CognitoCachingCredentialsProvider(
                 applicationContext,
@@ -56,25 +65,24 @@ class S3_test :AppCompatActivity() {
         val s3: AmazonS3 = AmazonS3Client(cred)*/
 
         try {
-
             // クライアントを生成
             var basicAWSCredentials =  BasicAWSCredentials(ACCESS_KEY,SECRET_ACCESS_KEY)
             var s3 =  AmazonS3Client(basicAWSCredentials)
 
-            val file = File(this.cacheDir, TEST_FILE) //File()で新規ファイル作成 // ただし空のファイルは送れない
+            val file = File(this.cacheDir, TEST_FILE)
+            //File()で新規ファイル作成, ただし空のファイルは送れない //cacheDir:ファイル書き込みできるディレクトリに移動する
             FileWriter(file).use { fw ->
                 BufferedWriter(fw).use { bw ->
                     PrintWriter(bw).use { pw ->
-                        pw.println("tengo hambre!") //params
+                        pw.println(lat)
+                        pw.println(lng) // 位置情報を書き込み
                     }
                 }
             }
 
-            File(this.cacheDir, TEST_FILE)
-
-            //var file = File(TEST_FILE)
             Log.i("File", file.readText())
 
+            //ネットワークとのやりとりはメインスレッドではできない！
             thread {
                 //val transferUtility = TransferUtility.builder().s3Client(s3).context(applicationContext).build()
 
@@ -94,8 +102,6 @@ class S3_test :AppCompatActivity() {
                 val objList = objListing.objectSummaries
 
                 // ファイル一覧を出力
-
-                // ファイル一覧を出力
                 for (obj in objList) {
                     // キー(ファイルパス)・サイズ・最終更新日
                         Log.i("info", obj.key)
@@ -106,13 +112,11 @@ class S3_test :AppCompatActivity() {
             Log.e("エラー", e as String)
         }
 
-
         /*val buckets: List<Bucket> = s3.listBuckets()
         textView3.text = ("Your Amazon S3 buckets are:")
         for (b in buckets) {
             textView3.text = ("* " + b.getName())
         }*/
-
 
         /*val transferUtility = TransferUtility.builder().s3Client(s3).context(applicationContext).build()
         val file = File(TEST_FILE) //File()で新規ファイル作成
