@@ -14,7 +14,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        //buildConfigField "String", "API_KEY",
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -51,11 +51,24 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.20.1'
     implementation 'com.amazonaws:aws-android-sdk-s3:2.23.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation 'com.amplifyframework:aws-api:1.18.0'
+    implementation 'com.amplifyframework:aws-datastore:1.18.0'
+    implementation 'com.amplifyframework:aws-api:1.18.0'
+    implementation 'com.amplifyframework:aws-datastore:1.18.0'
+    //Base SDK
+    implementation 'com.amazonaws:aws-android-sdk-core:2.25.0'
+    //AppSync SDK
+    implementation 'com.amazonaws:aws-android-sdk-appsync:'
+    implementation 'com.amplifyframework:aws-auth-cognito:1.18.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    //For AWSMobileClient only:
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.25.0'
+    //For the drop-in UI also:
+    implementation 'com.amazonaws:aws-android-sdk-auth-userpools:'
+    implementation 'com.amazonaws:aws-android-sdk-auth-ui:'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    /*flutter {
-        source '../..'
-    }*/
 }

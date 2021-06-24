@@ -1,4 +1,12 @@
-type Text @model {
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+type Todo @model {
   id: ID!
-  text: String!
+  name: String!
+  priority: Priority
+  description: String
 }
