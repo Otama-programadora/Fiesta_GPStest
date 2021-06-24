@@ -29,6 +29,11 @@ import kotlin.concurrent.thread
 class S3_test :AppCompatActivity() {
     // この辺の個人情報を載せたままコミットしない！ Nunca cometas el mismo error; Ten muchísimo cuidado para no mostrar estas llaves a GitHub
 
+    val ACCESS_KEY: String = getString(R.string.ACCESS_KEY)
+    val SECRET_ACCESS_KEY: String = getString(R.string.SECRET_ACCESS_KEY)
+    val TEST_FILE: String = getString(R.string.TESTFILE)
+    val BUCKET: String = getString(R.string.BUCKET)
+
             /*private val mContext:Context?
             init {
                 val context: Context? = null
